@@ -26,6 +26,7 @@ require('ext.spoons')
 require('ext.volume')
 require('ext.chooseApp')
 require('ext.battery')
+require('ext.safari')
 
 -- PaperWM = hs.loadSpoon("PaperWM")
 -- PaperWM:bindHotkeys({
