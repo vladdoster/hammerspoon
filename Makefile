@@ -1,24 +1,24 @@
+# vim: set fenc=utf8 ffs=unix ft=make list noet sw=2 ts=2 tw=100:
+
+.ONESHELL:
+
+vars ?= HS_APPLICATION=/Applications PREFIX=$${HOME}/.hammerspoon
+
 help: ## Display all Makfile targets
 	@grep -E '^.*[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
 	| sort \
 	| awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install: ## Install dependencies (i.e., asm modules)
-	git submodule update \
-		--init \
-		--recursive
+dependencies:
+	git submodule update --init --recursive
+
+
+install: dependencies ## Install dependencies (i.e., asm modules)
 	$(info compiling modules)
-	find . -mindepth 5 -name Makefile -print -type f \
-		| xargs -I{} dirname {} \
-		| xargs -I{} make \
-			--directory {} \
-			--ignore-errors \
-			--jobs \
-			install
-	$(info extracting spoon archives)
-	find . -mindepth 5 -name '*tar.gz' -print \
-		| xargs -I{} realpath {} \
-		| xargs -I{} tar -xvzf {}
+	zsh +o extendedglob -ilc \
+		'for mk_dir in **/(*/)#Makefile(:h); \
+		${vars} \
+		make --always-make --directory=$${mk_dir} --ignore-errors --jobs --keep-going'
 
 install-luaformatter: ## Install luaformatter via luarocks
 	luarocks install \
